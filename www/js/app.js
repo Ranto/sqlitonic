@@ -3,22 +3,29 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic'])
+angular.module('starter', ['ionic', 'ngCordova'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $cordovaSQLite) {
   $ionicPlatform.ready(function() {
 
-    window.sqlitePlugin.selfTest(function() {
-      alert('SELF test OK');
-    });
+    var db = $cordovaSQLite.openDB({ name: "sqlitonic.db", location: "default" });
 
-    var db = $cordovaSQLite.openDB({ name: "sqlitonic.db" });
     db.sqlBatch([
       'DROP TABLE IF EXISTS listes',
       'CREATE TABLE listes (id integer primary key, nom text)',
       [ 'INSERT INTO listes(nom) VALUES(?)', ['Are'] ],
       [ 'INSERT INTO listes(nom) VALUES(?)', ['Hac'] ]
-    ]);
+    ] , function() {
+      alert('OKAY');
+    }, function(error) {
+      alert('Populate table error: ' + error.message);
+    });
+
+    db.transaction(function(tr) {
+      tr.executeSql("SELECT upper('Test string') AS upperString", [], function(tr, rs) {
+        alert('Got upperString result: ' + rs.rows.item(0).upperString);
+      });
+    });
 
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
