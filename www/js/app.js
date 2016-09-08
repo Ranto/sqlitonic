@@ -7,6 +7,19 @@ angular.module('starter', ['ionic'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
+
+    window.sqlitePlugin.selfTest(function() {
+      alert('SELF test OK');
+    });
+
+    var db = $cordovaSQLite.openDB({ name: "sqlitonic.db" });
+    db.sqlBatch([
+      'DROP TABLE IF EXISTS listes',
+      'CREATE TABLE listes (id integer primary key, nom text)',
+      [ 'INSERT INTO listes(nom) VALUES(?)', ['Are'] ],
+      [ 'INSERT INTO listes(nom) VALUES(?)', ['Hac'] ]
+    ]);
+
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -24,5 +37,9 @@ angular.module('starter', ['ionic'])
 })
 
 .controller('defController', function () {
+
+})
+
+.factory('ListeDBService', function () {
 
 })
