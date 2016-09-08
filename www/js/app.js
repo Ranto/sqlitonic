@@ -22,3 +22,26 @@ angular.module('starter', ['ionic'])
     }
   });
 })
+
+.controller('defController', function ($scope, ListeService) {
+  $scope.listes = ListeService.query();
+})
+
+.factory('ListeService', function () {
+  return {
+    query: function () {
+      var listes = [
+        {
+          id: 1,
+          nom: "Are"
+        },
+        {
+          id: 2,
+          nom: "Hac"
+        }
+      ];
+
+      return listes;
+    }
+  }
+})
