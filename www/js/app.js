@@ -22,3 +22,7 @@ angular.module('starter', ['ionic'])
     }
   });
 })
+
+.controller('defController', function () {
+
+})
