@@ -5,10 +5,10 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic', 'ngCordova'])
 
-.run(function($ionicPlatform, $cordovaSQLite) {
+.run(function($ionicPlatform, $cordovaSQLite, $rootScope) {
   $ionicPlatform.ready(function() {
 
-    var db = $cordovaSQLite.openDB({ name: "sqlitonic.db", location: "default" });
+    var db = $rootScope.db = $cordovaSQLite.openDB({ name: "sqlitonic.db", location: "default" });
 
     db.sqlBatch([
       'DROP TABLE IF EXISTS listes',
@@ -43,10 +43,83 @@ angular.module('starter', ['ionic', 'ngCordova'])
   });
 })
 
-.controller('defController', function () {
+.controller('defController', function ($scope, ListeDBService, $cordovaSQLite) {
+  $scope.listes = ListeDBService.query();
+
+  // document.addEventListener('deviceready', function () {
+  //   // var db = $cordovaSQLite.openDB({ name: "sqlitonic.db", location: "default" });
+  //
+  //   $rootScope.db.transaction(function(tr) {
+  //     tr.executeSql("SELECT upper('Test string') AS upperString", [], function(tr, rs) {
+  //       alert('ADAA - Got upperString result: ' + rs.rows.item(0).upperString);
+  //     });
+  //   });
+  // }, false)
+
+  $scope.select = function () {
+    var query = "SELECT * FROM listes";
+    $scope.listes = [];
+    $cordovaSQLite.execute($scope.db, query, []).then(
+      function (result) {
+        if (result.rows.length > 0) {
+          for (var i = 0; i < result.rows.length; i++) {
+            $scope.listes.push(
+              {
+                id: result.rows.item(i).id,
+                nom: result.rows.item(i).nom
+              }
+            );
+          }
+        }
+      }, function (error) {
+        alert(error.message);
+      }
+    );
+  }
+
 
 })
 
 .factory('ListeDBService', function () {
 
+  var listes = [];
+
+  return {
+    query: function () {
+      listes = [
+        {
+          id: 1,
+          nom: "Arecgh"
+        },
+        {
+          id: 2,
+          nom: "Hacha"
+        }
+      ];
+
+      return listes;
+
+      // var query = "SELECT * FROM listes";
+      //
+      // var db = $cordovaSQLite.openDB({ name: "sqlitonic.db", location: "default" });
+      //
+      // $cordovaSQLite.execute(db, query).then(
+      //   function (result) {
+      //     if (result.rows.length > 0) {
+      //       for (var i = 0; i < result.rows.length; i++) {
+      //         var liste = {
+      //           id: result.rows.item(i).id,
+      //           nom: result.rows.item(i).nom
+      //         };
+      //         listes.push(liste);
+      //       }
+      //     }
+      //     return listes;
+      //   },
+      //   function (error) {
+      //     alert(error.message);
+      //   }
+      // );
+    }
+  }
 })

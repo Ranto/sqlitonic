@@ -29,6 +29,12 @@
         <h1 class="title">Ionic Blank Starter</h1>
       </ion-header-bar>
       <ion-content>
+        <ion-list>
+          <ion-item ng-repeat="liste in listes">
+            {{liste.id}} - {{liste.nom}}
+          </ion-item>
+        </ion-list>
+        <button class="button" ng-click="select()">Select</button>
       </ion-content>
     </ion-pane>
   </body>
